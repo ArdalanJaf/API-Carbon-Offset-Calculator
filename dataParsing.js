@@ -59,8 +59,20 @@ function expoArrayGen(object) {
   }
   return arr;
 }
+// {} start with single treepurchase object
+// [{},{},{},{}] turn treepurchase object into array of monthly CO2 offset values (do same to all)
+// [[{},{},{}], [{},{},{}]]? reduce all to one array with Offset values added together.
+// [{}{}{}{}{}] end up with 1 array, with total Offset per month
 
-console.log(expoArrayGen(treePurchases[3]));
+// [{}{}{}] make single array from first purchase object
+// [{}{}{}{}{}{}{}]: based on month, add values, if no object, create object with your value PLUSS the previous value
+// eg. treePurchases.map((purchase)=> { getMonthIndexAndOffset(purchase) = offsetArray, array[monthIndex].offset += offset  if no object for monthIndex, create object (adding previous object's offset)})
+
+// [{}{}{}{}] create array of empty objects, same number as FinalMonthIndex
+// [{.}{.}{.}{.}] map through treePurchases
+// eg. treePurchases.map((purchase)=> { getMonthIndexAndOffset(purchase) = [{}{}{}], array[monthIndex].offset += offset  if no object for monthIndex, create object (adding previous object's offset)})
+
+// console.log(expoArrayGen(treePurchases[3]));
 // tree: 28.5kg /year   month1 = 0kg -> month 61 = 28.5kg (exponential)
 
 // person: 5.55 tons => 5550kg /year
@@ -69,3 +81,5 @@ console.log(expoArrayGen(treePurchases[3]));
 
 const timeForFullOffset = null;
 const annualEmmission = annualCO2Emissions;
+
+l;
