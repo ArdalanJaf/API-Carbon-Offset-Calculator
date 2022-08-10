@@ -1,19 +1,19 @@
 // Data format
-// const data = {
-//   annualCO2Emissions: "5.55",
-//   treePurchases: [
-//     { month: "0", year: "2022", trees: 20 },
-//     { month: "4", year: "2023", trees: 30 },
-//     { month: "9", year: "2023", trees: 42 },
-//     { month: "0", year: "2024", trees: 55 },
-//   ],
-//   treeCost: { initial: "120", upkeep: "12", currency: "dollars" },
-//   maxAnualPurchase: "55", // put in check to make sure they cannot buy beyond max (maybe on front?)
-//   maxTreeOffset: {
-//     annualOffset: "28.5",
-//     yearsToGrow: "5",
-//   },
-// };
+const data = {
+  annualCO2Emissions: "5.55", // metric tons (5550 kg)
+  treePurchases: [
+    { month: "0", year: "2022", trees: 10 },
+    // { month: "4", year: "2023", trees: 30 },
+    // { month: "9", year: "2023", trees: 42 },
+    // { month: "0", year: "2024", trees: 55 },
+  ],
+  treeCost: { initial: "120", upkeep: "12", currency: "dollars" },
+  maxAnualPurchase: "55", // put in check to make sure they cannot buy beyond max (maybe on front?)
+  maxTreeOffset: {
+    annualOffset: "28.5", //kg
+    yearsToGrow: "5", //years
+  },
+};
 
 function offsetCalc(data) {
   const { treePurchases, treeCost, maxTreeOffset } = data;
@@ -28,51 +28,51 @@ function offsetCalc(data) {
 
   // returned data format
   let result = {
-    graphData: [],
+    graphData: [], // { monthIndex: #, offset: #.###(kg), expenditure: #.##($ - NOT cents) }
     stats: {
       trees: 0,
-      annualOffset: 0,
-      cost: { initial: 0, upkeep: 0, total: 0 },
+      annualOffset: 0, // metric tons
+      cost: { initial: 0, upkeep: 0, total: 0 }, // #.##($ - NOT cents)
     },
   };
   let { graphData, stats } = result;
 
-  // This function produces an array ("graphData") of objects. Each object represents 1 month and holds the communalitve CO2 offset and expenditure - "{monthIndex, offset, expenditure}".
-  // Each treePurchase is assigned a monthIndex according to its date, in relation to the first treePurchase date.
-  // When the first treePurchase (monthIndex = 0) goes through the for-loop, it creates all the object, with calculated offset & expenditure per month for the first trees purchased.
-  // All subsequent treePurchases ADD their respective calculated offset & expenditure per month to the objects created by the first loop (see above line).
-  // All subsequent treePurchases use their respective monthIndex (eg. monthIndex = 20) to know at which object they should start adding data (eg. graphData[20]).
+  // This function produces an array ("graphData") of objects. Each object represents 1 month and holds the communalitve CO2 offset and expenditure for all treePurchases.
+  // Each treePurchase is assigned a monthIndex according to its date, in relation to the first treePurchase date (i.e. first purchase date = startMonthIndex 0).
+  // Each for-loop starts inserting data from the startMonthIndex of a treePurchase object, respectively.
+  // For each treePurchase the for-loop cycles through all the other months, calculating and adding offset & expenditure of that purchase to each month's total values.
   treePurchases.map((purchase) => {
     let startMonthIndex = startMonthIndexGen(purchase);
     let trees = Number(purchase.trees);
-    // console.log(purchase);
 
     for (let i = startMonthIndex; i <= finalMonthIndex; i++) {
       if (startMonthIndex === 0) {
-        // treePurchases[0] creates graphData objects
         graphData[i] = {
           monthIndex: i,
-          offset: decimalFix(offsetCalc(trees, i, startMonthIndex)),
-          expenditure: costCalc(trees, i, startMonthIndex),
+          offset: 0,
+          expenditure: 0,
         };
-      } else {
-        // treePurchases[>0] add to graphData objects
-        graphData[i].offset = decimalFix(
-          graphData[i].offset + offsetCalc(trees, i, startMonthIndex)
-        );
-        graphData[i].expenditure =
-          graphData[i].expenditure + costCalc(trees, i, startMonthIndex);
       }
+      // Add offset
+      graphData[i].offset = decimalFix(
+        graphData[i].offset + offsetCalc(trees, i, startMonthIndex),
+        3
+      );
+      // Add expenditure
+      graphData[i].expenditure = decimalFix(
+        graphData[i].expenditure + costCalc(trees, i, startMonthIndex)
+      );
     }
     // Add cumulative total stats
     stats.trees += trees;
-    stats.cost.initial += trees * initialCost;
-    stats.cost.upkeep +=
-      trees * (monthlyUpkeep * (finalMonthIndex - startMonthIndex));
+    stats.cost.initial += decimalFix(trees * initialCost);
+    stats.cost.upkeep += decimalFix(
+      trees * (monthlyUpkeep * (finalMonthIndex - startMonthIndex))
+    );
   });
   // Add total stats
   stats.cost.total = graphData[finalMonthIndex].expenditure;
-  stats.annualOffset = (graphData[finalMonthIndex].offset * 12) / 1000;
+  stats.annualOffset = (graphData[finalMonthIndex].offset * 12) / 1000; // metric tons
 
   return result;
 
@@ -109,11 +109,9 @@ function offsetCalc(data) {
     return trees * (mUpkeep * (i - startMonthIndex) + iCost);
   }
 
-  function decimalFix(num, dPlaces = 3) {
+  function decimalFix(num, dPlaces = 2) {
     return Number(num.toFixed(dPlaces));
   }
 }
 
 console.log(offsetCalc(data));
-
-// Improve: add decimal handler for when treeCosts are decimal numbers (eg. upkeep: "12.31")
