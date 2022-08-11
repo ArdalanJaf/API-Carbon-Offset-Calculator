@@ -2,14 +2,12 @@
 const express = require("express");
 const router = express.Router();
 module.exports = router;
+const offsetCalc = require("./offsetCalc");
 
 router.post("/calculate", async (req, res) => {
-  console.log("msg recieved");
   try {
-    console.log(req.body);
-
-    // 3. Tell front-end it worked.
-    res.send({ status: 1 });
+    const resultData = await offsetCalc(req.body);
+    res.send({ status: 1, resultData });
   } catch (error) {
     res.send({ status: 0 });
   }
