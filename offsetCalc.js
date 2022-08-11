@@ -2,8 +2,8 @@
 // const data = {
 //   annualCO2Emissions: "5.55", // metric tons (5550 kg)
 //   treePurchases: [
-//     { month: "0", year: "2022", trees: 10 },
-//     // { month: "4", year: "2023", trees: 30 },
+//     { month: "0", year: "2022", trees: 1 },
+//     { month: "11", year: "2024", trees: 1 },
 //     // { month: "9", year: "2023", trees: 42 },
 //     // { month: "0", year: "2024", trees: 55 },
 //   ],
@@ -57,7 +57,7 @@ function offsetCalc(data) {
       for (let i = startMonthIndex; i <= finalMonthIndex; i++) {
         if (startMonthIndex === 0) {
           graphData[i] = {
-            monthIndex: i,
+            date: indexToDate(i),
             offset: 0,
             expenditure: 0,
           };
@@ -120,6 +120,35 @@ function offsetCalc(data) {
 
     function decimalFix(num, dPlaces = 2) {
       return Number(num.toFixed(dPlaces));
+    }
+
+    function indexToDate(index, startObject = treePurchases[0]) {
+      const getMonth = (month) => {
+        let months = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ];
+        return months[Number(month) + (index % 12)];
+      };
+      const getYear = (year) => {
+        return Number(year) + Math.floor(index / 12);
+      };
+
+      const dateFormat = (month, year) => {
+        return `${month}-${year.toString().slice(2, 4)}`;
+      };
+
+      return dateFormat(getMonth(startObject.month), getYear(startObject.year)); //{timetamp for 1/month/year} || {"Sep 01"}
     }
   } catch (error) {
     return error;

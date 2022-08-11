@@ -7,6 +7,7 @@ const offsetCalc = require("./offsetCalc");
 router.post("/calculate", async (req, res) => {
   try {
     const resultData = await offsetCalc(req.body);
+    // console.log(resultData);
     res.send({ status: 1, resultData });
   } catch (error) {
     res.send({ status: 0 });
