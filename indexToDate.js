@@ -1,10 +1,7 @@
-let index = 10;
-let treePurchases = [{ month: "1", year: "2023", trees: 1 }];
+let index = 11;
+let treePurchases = [{ month: "8", year: "2023", trees: 1 }];
 
 function indexToDate(index, startObject = treePurchases[0]) {
-  const dateFormat = (month, year) => {
-    return `${month}-${year.toString().slice(2, 4)}`;
-  };
   const getMonth = (month) => {
     let months = [
       "Jan",
@@ -20,20 +17,30 @@ function indexToDate(index, startObject = treePurchases[0]) {
       "Nov",
       "Dec",
     ];
-    return months[Number(month) + (index % 12)];
+
+    return (
+      Number(month) +
+      (index % 12) -
+      (Number(month) + (index % 12) >= 12 ? 12 : 0)
+    );
   };
+
   const getYear = (year) => {
     return Number(year) + Math.floor(index / 12);
   };
 
-  return dateFormat(getMonth(startObject.month), getYear(startObject.year)); //{timetamp for 1/month/year} || {"Sep 01"}
+  const dateFormat = (month, year) => {
+    return `${month}-${year.toString().slice(2, 4)}`;
+  };
+
+  return dateFormat(getMonth(startObject.month), getYear(startObject.year));
 }
 
 console.log(indexToDate(index));
 // console.log(300 % 12);
 // console.log(0 + 0 - 0);
 
-let tD = { month: "11", year: "2023", trees: 1 };
+let tD = { month: "4", year: "2024", trees: 1 };
 
 function startMonthIndexGen(object, startObject = treePurchases[0]) {
   // monthIndex is number of months from earliest purchase-entree date. The first tree purchase object will have startMonthIndex of 0.
@@ -45,4 +52,7 @@ function startMonthIndexGen(object, startObject = treePurchases[0]) {
     Number(object.month)
   );
 }
-console.log("mIndex: ", startMonthIndexGen(tD));
+// console.log("mIndex: ", startMonthIndexGen(tD));
+
+// console.log(8 + (4 % 12)); //12
+// console.log(8 + (11 % 12): // 12

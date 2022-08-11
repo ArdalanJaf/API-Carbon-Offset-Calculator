@@ -138,7 +138,11 @@ function offsetCalc(data) {
           "Nov",
           "Dec",
         ];
-        return months[Number(month) + (index % 12)];
+        return months[
+          Number(month) +
+            (index % 12) -
+            (Number(month) + (index % 12) >= 12 ? 12 : 0)
+        ];
       };
       const getYear = (year) => {
         return Number(year) + Math.floor(index / 12);
