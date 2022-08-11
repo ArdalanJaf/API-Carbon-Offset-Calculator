@@ -1,5 +1,5 @@
-// let index = 11;
-// let treePurchases = [{ month: "11", year: "2022", trees: 1 }];
+let index = 11;
+let treePurchases = [{ month: "11", year: "2022", trees: 1 }];
 
 function indexToDate(index, startObject = treePurchases[0]) {
   const getMonth = (month) => {
@@ -18,11 +18,11 @@ function indexToDate(index, startObject = treePurchases[0]) {
       "Dec",
     ];
 
-    return (
+    return months[
       Number(month) +
-      (index % 12) -
-      (Number(month) + (index % 12) >= 12 ? 12 : 0)
-    );
+        (index % 12) -
+        (Number(month) + (index % 12) >= 12 ? 12 : 0)
+    ];
   };
 
   const getYear = (year) => {
@@ -30,14 +30,14 @@ function indexToDate(index, startObject = treePurchases[0]) {
   };
 
   const dateFormat = (month, year) => {
-    return `${month}-${year.toString().slice(2, 4)}`;
+    return `${month} ${year.toString()}`;
   };
 
   return dateFormat(getMonth(startObject.month), getYear(startObject.year));
 }
 
 module.export = indexToDate;
-// console.log(indexToDate(index));
+console.log(indexToDate(index));
 
 // let tD = { month: "4", year: "2024", trees: 1 };
 
@@ -51,3 +51,8 @@ module.export = indexToDate;
 //     Number(object.month)
 //   );
 // }
+
+function indexToUTC(index, startObject = treePurchases[0]) {
+  const { month, year } = startObject;
+  return new Date(Number(year), Number(month) + Number(index), 1, 1, 0);
+}

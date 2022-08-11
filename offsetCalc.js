@@ -25,23 +25,24 @@ function offsetCalc(data) {
   try {
     const { annualCO2Emissions, treePurchases } = data;
     const { treeCost, maxTreeOffset } = data.config;
-    const monthlyUpkeep = Number(treeCost.upkeep) / 12;
-    const initialCost = Number(treeCost.initial);
-    const monthlyOffset = Number(maxTreeOffset.annualOffset) / 12;
-    const monthsToGrow = Number(maxTreeOffset.yearsToGrow) * 12;
-    const finalMonthIndex =
-      startMonthIndexGen(treePurchases[treePurchases.length - 1]) +
-      monthsToGrow; // e.g.  5 years for trees to grow = 60 months
-    // Total number of months from first purchase, upto complete growth of final trees purchase.
 
-    // returned data format
+    // Upon initialisation these values never change.
+    const MONTHLY_UPKEEP = Number(treeCost.upkeep) / 12;
+    const INITIAL_COST = Number(treeCost.initial);
+    const MONTHLY_OFFSET = Number(maxTreeOffset.annualOffset) / 12;
+    const MONTHS_TO_GROW = Number(maxTreeOffset.yearsToGrow) * 12;
+    const FINAL_MONTH_INDEX =
+      startMonthIndexGen(treePurchases[treePurchases.length - 1]) +
+      MONTHS_TO_GROW;
+
+    // Returned data format.
     let result = {
       graphData: [], // { monthIndex: #, offset: #.###(kg), expenditure: #.##($ - NOT cents) }
       stats: {
         trees: 0,
         annualCO2Emissions: decimalFix(Number(annualCO2Emissions), 2),
         annualOffset: 0, // metric tons
-        cost: { initial: 0, upkeep: 0, total: 0 }, // #.##($ - NOT cents)
+        cost: { initial: 0, upkeep: 0, totalUpkeep: 0, grandTotal: 0 }, // #.##($ - NOT cents)
       },
     };
     let { graphData, stats } = result;
@@ -54,10 +55,10 @@ function offsetCalc(data) {
       let startMonthIndex = startMonthIndexGen(purchase);
       let trees = Number(purchase.trees);
 
-      for (let i = startMonthIndex; i <= finalMonthIndex; i++) {
+      for (let i = startMonthIndex; i <= FINAL_MONTH_INDEX; i++) {
         if (startMonthIndex === 0) {
           graphData[i] = {
-            date: indexToUTC(i),
+            date: indexToDate(i),
             offset: 0,
             expenditure: 0,
             emissions: decimalFix((Number(annualCO2Emissions) * 1000) / 12),
@@ -65,8 +66,7 @@ function offsetCalc(data) {
         }
         // Add offset
         graphData[i].offset = decimalFix(
-          graphData[i].offset + offsetCalc(trees, i, startMonthIndex),
-          2
+          graphData[i].offset + offsetCalc(trees, i, startMonthIndex)
         );
         // Add expenditure
         graphData[i].expenditure = decimalFix(
@@ -75,15 +75,23 @@ function offsetCalc(data) {
       }
       // Add cumulative total stats
       stats.trees += trees;
-      stats.cost.initial += decimalFix(trees * initialCost);
-      stats.cost.upkeep += decimalFix(
-        trees * (monthlyUpkeep * (finalMonthIndex - startMonthIndex))
+      stats.cost.initial += decimalFix(trees * INITIAL_COST);
+      stats.cost.totalUpkeep += decimalFix(
+        trees * (MONTHLY_UPKEEP * (FINAL_MONTH_INDEX - startMonthIndex))
       );
     });
     // Add total stats
-    stats.cost.total = graphData[finalMonthIndex].expenditure;
-    stats.annualOffset = (graphData[finalMonthIndex].offset * 12) / 1000; // metric tons
 
+    stats.totalYears = Math.round(FINAL_MONTH_INDEX / 12);
+    stats.cost.upkeep = decimalFix(stats.trees * MONTHLY_UPKEEP);
+    stats.cost.grandTotal = graphData[FINAL_MONTH_INDEX].expenditure;
+    stats.annualOffset = (graphData[FINAL_MONTH_INDEX].offset * 12) / 1000; // metric tons
+    stats.carbonNeutralDate =
+      graphData[
+        graphData.findIndex(
+          (item) => item.offset >= (Number(annualCO2Emissions) * 1000) / 12
+        )
+      ].date;
     return result;
 
     function startMonthIndexGen(object, startObject = treePurchases[0]) {
@@ -101,32 +109,61 @@ function offsetCalc(data) {
       return (
         trees *
         //if tree is still growing
-        (i < startMonthIndex + monthsToGrow
+        (i < startMonthIndex + MONTHS_TO_GROW
           ? //add fraction of max offset based on how many days its grown
-            (i - startMonthIndex) * (monthlyOffset / monthsToGrow)
+            (i - startMonthIndex) * (MONTHLY_OFFSET / MONTHS_TO_GROW)
           : // else add max offset
-            monthlyOffset)
+            MONTHLY_OFFSET)
       );
     }
 
-    function costCalc(
-      trees,
-      i,
-      startMonthIndex,
-      mUpkeep = monthlyUpkeep,
-      iCost = initialCost
-    ) {
-      return trees * (mUpkeep * (i - startMonthIndex) + iCost);
+    function costCalc(trees, i, startMonthIndex) {
+      return trees * (MONTHLY_UPKEEP * (i - startMonthIndex) + INITIAL_COST);
     }
 
     function decimalFix(num, dPlaces = 2) {
       return Number(num.toFixed(dPlaces));
     }
 
-    function indexToUTC(index, startObject = treePurchases[0]) {
-      const { month, year } = startObject;
-      return new Date(Number(year), Number(month) + Number(index), 1, 1, 0);
+    function indexToDate(index, startObject = treePurchases[0]) {
+      const getMonth = (month) => {
+        let months = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ];
+
+        return months[
+          Number(month) +
+            (index % 12) -
+            (Number(month) + (index % 12) >= 12 ? 12 : 0)
+        ];
+      };
+
+      const getYear = (year) => {
+        return Number(year) + Math.floor(index / 12);
+      };
+
+      const dateFormat = (month, year) => {
+        return `${month} ${year.toString()}`;
+      };
+
+      return dateFormat(getMonth(startObject.month), getYear(startObject.year));
     }
+
+    // function indexToUTC(index, startObject = treePurchases[0]) {
+    //   const { month, year } = startObject;
+    //   return new Date(Number(year), Number(month) + Number(index), 1, 1, 0);
+    // }
   } catch (error) {
     return error;
   }
