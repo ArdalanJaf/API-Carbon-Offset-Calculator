@@ -24,8 +24,31 @@ router.post("/calculate", async (req, res) => {
   }
 });
 
+router.get("/get_config", async (req, res) => {
+  try {
+    // console.log(req.body);
+    let result = await pConnection(queries.getConfig());
+    console.log("done", result);
+    res.send({ status: 1, result });
+  } catch (error) {
+    res.send({ status: 0 });
+  }
+});
+
+router.post("/reset_config", async (req, res) => {
+  try {
+    console.log(req.body);
+    let result = await pConnection(queries.resetConfig());
+    console.log("done", result);
+    res.send({ status: 1 });
+  } catch (error) {
+    res.send({ status: 0 });
+  }
+});
+
 router.post("/update_config", async (req, res) => {
   try {
+    console.log(req.body);
     let result = await pConnection(queries.updateConfig(req.body));
     console.log("done", result);
     res.send({ status: 1 });

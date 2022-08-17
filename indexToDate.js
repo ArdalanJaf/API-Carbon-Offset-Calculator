@@ -91,7 +91,39 @@ function unixToDate(unixStr, longM = false, longY = false) {
   return `${month} ${year}`;
 }
 
-console.log(unixToDate(unix, false, true));
-// console.log(unix);
+// console.log(unixToDate(unix, false, true));
+// // console.log(unix);
+// 0 - 11
+// console.log( );
 
-console.log(4 % 6);
+let obj = { initial_cost: "2", upkeep_cost: "200", annual_offset: "" };
+function fn(obj) {
+  return `UPDATE offset_simulator_config  
+              SET 
+              ${obj.initial_cost ? `initial_cost=${obj.initial_cost}` : ""} 
+              ${
+                obj.upkeep_cost
+                  ? `${obj.initial_cost ? `,` : ""} upkeep_cost=${
+                      obj.upkeep_cost
+                    }`
+                  : ""
+              } 
+              ${
+                obj.annual_offset
+                  ? `${obj.upkeep_cost ? `,` : ""} annual_offset="${
+                      obj.annual_offset
+                    }`
+                  : ""
+              }
+              ${
+                obj.years_to_grow
+                  ? `${obj.annual_offset ? `,` : ""} years_to_grow=${
+                      obj.years_to_grow
+                    }`
+                  : ""
+              }
+                  WHERE id="custom"
+  `;
+}
+
+console.log(fn(obj));
