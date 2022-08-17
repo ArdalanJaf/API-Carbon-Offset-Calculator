@@ -8,10 +8,10 @@ const queries = {
   resetConfig: function (obj) {
     return `UPDATE offset_simulator_config  
                SET 
-                initial_cost="DEFAULT", 
-                upkeep_cost="DEFAULT", 
-                annual_offset="DEFAULT", 
-                years_to_grow="DEFAULT"
+                initial_cost=DEFAULT, 
+                upkeep_cost=DEFAULT, 
+                annual_offset=DEFAULT, 
+                years_to_grow=DEFAULT
                       WHERE id="custom"
 `;
   },
@@ -29,7 +29,7 @@ const queries = {
                 } 
                 ${
                   obj.annual_offset
-                    ? `${obj.upkeep_cost ? `,` : ""} annual_offset="${
+                    ? `${obj.upkeep_cost ? `,` : ""} annual_offset=${
                         obj.annual_offset
                       }`
                     : ""
