@@ -1,13 +1,8 @@
 const defaultConfig = {
-  treeCost: {
-    initial: "120",
-    upkeep: "12",
-    // inflationRate: "",
-  },
-  maxTreeOffset: {
-    annualOffset: "28.5", //kg
-    yearsToGrow: "5", //years
-  },
+  initial_cost: "120",
+  upkeep_cost: "12",
+  annual_offset: "28.5", //kg
+  years_to_grow: "5", //years
 };
 
 module.exports = defaultConfig;

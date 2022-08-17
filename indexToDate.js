@@ -1,5 +1,5 @@
-let index = 11;
-let treePurchases = [{ month: "11", year: "2022", trees: 1 }];
+// let index = 11;
+// let treePurchases = [{ month: "11", year: "2022", trees: 1 }];
 
 function indexToDate(index, startObject = treePurchases[0]) {
   const getMonth = (month) => {
@@ -37,7 +37,9 @@ function indexToDate(index, startObject = treePurchases[0]) {
 }
 
 module.export = indexToDate;
-console.log(indexToDate(index));
+// console.log(indexToDate(index));
+
+// FIX YEAR
 
 // let tD = { month: "4", year: "2024", trees: 1 };
 
@@ -52,7 +54,44 @@ console.log(indexToDate(index));
 //   );
 // }
 
+let index = 11;
+let treePurchases = [{ month: "11", year: "2022", trees: 1 }];
+
 function indexToUTC(index, startObject = treePurchases[0]) {
   const { month, year } = startObject;
+
   return new Date(Number(year), Number(month) + Number(index), 1, 1, 0);
 }
+
+let date = indexToUTC(index);
+let unix = date.getTime();
+
+function unixToDate(unixStr, longM = false, longY = false) {
+  const months = [
+    "January",
+    "Febuary",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  let date = new Date(unixStr);
+  let month = longM
+    ? months[date.getMonth()]
+    : months[date.getMonth()].slice(0, 3);
+  let year = longY
+    ? date.getFullYear()
+    : date.getFullYear().toString().slice(-2);
+  return `${month} ${year}`;
+}
+
+console.log(unixToDate(unix, false, true));
+// console.log(unix);
+
+console.log(4 % 6);
