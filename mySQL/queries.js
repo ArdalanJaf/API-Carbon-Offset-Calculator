@@ -29,16 +29,18 @@ const queries = {
                 } 
                 ${
                   obj.annual_offset
-                    ? `${obj.upkeep_cost ? `,` : ""} annual_offset=${
-                        obj.annual_offset
-                      }`
+                    ? `${
+                        obj.upkeep_cost || obj.initial_cost ? `,` : ""
+                      } annual_offset=${obj.annual_offset}`
                     : ""
                 }
                 ${
                   obj.years_to_grow
-                    ? `${obj.annual_offset ? `,` : ""} years_to_grow=${
-                        obj.years_to_grow
-                      }`
+                    ? `${
+                        obj.annual_offset || obj.initial_cost || obj.upkeep_cost
+                          ? `,`
+                          : ""
+                      } years_to_grow=${obj.years_to_grow}`
                     : ""
                 }
                     WHERE id="custom"
