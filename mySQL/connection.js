@@ -1,14 +1,13 @@
 const mysql = require("mysql");
 
-const connection = mysql.createConnection({
+const connection = mysql.createPool({
+  connectionLimit: 10,
   database: process.env.DBDATABASE,
   user: process.env.DBUSERNAME,
   password: process.env.DBPASSWORD,
   host: process.env.DBHOST,
   port: process.env.DBPORT,
 });
-
-connection.connect();
 
 function pConnection(query) {
   return new Promise((resolve, reject) => {
@@ -21,5 +20,4 @@ function pConnection(query) {
     });
   });
 }
-
 module.exports = pConnection;

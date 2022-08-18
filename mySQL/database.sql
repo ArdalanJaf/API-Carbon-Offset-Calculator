@@ -1,126 +1,65 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.3
+-- version 4.9.7
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: May 19, 2022 at 12:32 PM
--- Server version: 10.4.21-MariaDB
--- PHP Version: 8.1.4
+-- Host: localhost:3306
+-- Generation Time: Aug 18, 2022 at 04:28 PM
+-- Server version: 10.3.35-MariaDB-cll-lve
+-- PHP Version: 7.4.30
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO"; 
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
 --
--- Database: `portfolio-contact`
+-- Database: `ardalanj_portfolio`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `emails`
+-- Table structure for table `offset_simulator_config`
 --
 
-CREATE TABLE `emails` (
-  `id` int(11) NOT NULL,
-  `email` varchar(32) NOT NULL,
-  `entry_date` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE `offset_simulator_config` (
+  `id` varchar(100) CHARACTER SET utf8mb4 NOT NULL COMMENT 'Randomly generated id from back-end. Default config id = "default"',
+  `initial_cost` varchar(10) CHARACTER SET utf16 NOT NULL DEFAULT '120' COMMENT 'Initial cost of tree, in dollars (000.00)',
+  `upkeep_cost` varchar(10) CHARACTER SET utf8mb4 NOT NULL DEFAULT '12' COMMENT 'Monthly upkeep cost for single tree in dollars (000.00)',
+  `annual_offset` varchar(10) CHARACTER SET utf8mb4 NOT NULL DEFAULT '28.5' COMMENT 'Amount of carbon offset by fully grown tree, in kg (00.00)',
+  `years_to_grow` varchar(10) CHARACTER SET utf8mb4 NOT NULL DEFAULT '5' COMMENT 'Number of years for tree to become fully grown (0)',
+  `date_added` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `emails`
+-- Dumping data for table `offset_simulator_config`
 --
 
-INSERT INTO `emails` (`id`, `email`, `entry_date`) VALUES
-(54, 'a@a.a', '2022-05-09 23:16:46'),
-(56, 'testy@t.t', '2022-05-11 10:43:05');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `messages`
---
-
-CREATE TABLE `messages` (
-  `id` int(11) NOT NULL,
-  `email_id` int(11) NOT NULL,
-  `message` varchar(1024) NOT NULL,
-  `entry_date` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `messages`
---
-
-INSERT INTO `messages` (`id`, `email_id`, `message`, `entry_date`) VALUES
-(11, 54, 'hi ardo', '2022-05-09 23:16:46'),
-(12, 54, 'bye ardo', '2022-05-09 23:17:24'),
-(13, 56, 'testing env', '2022-05-11 10:43:05');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `names`
---
-
-CREATE TABLE `names` (
-  `id` int(11) NOT NULL,
-  `email_id` int(11) NOT NULL,
-  `name` varchar(32) NOT NULL,
-  `entry_date` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `names`
---
-
-INSERT INTO `names` (`id`, `email_id`, `name`, `entry_date`) VALUES
-(12, 54, 'ardle', '2022-05-09 23:16:46'),
-(13, 54, 'ardilio', '2022-05-09 23:17:24'),
-(14, 56, 'testy', '2022-05-11 10:43:05');
+INSERT INTO `offset_simulator_config` (`id`, `initial_cost`, `upkeep_cost`, `annual_offset`, `years_to_grow`, `date_added`) VALUES
+('default', '120', '12', '28.5', '5', '2022-08-17 11:20:43'),
+('config', '120', '12', '28.5', '5', '2022-08-17 11:35:59');
 
 --
 -- Indexes for dumped tables
 --
 
---
--- Indexes for table `emails`
---
-ALTER TABLE `emails`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email_address` (`email`);
 
 --
--- Indexes for table `messages`
+-- Indexes for table `offset_simulator_config`
 --
-ALTER TABLE `messages`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `names`
---
-ALTER TABLE `names`
+ALTER TABLE `offset_simulator_config`
   ADD PRIMARY KEY (`id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
---
+---
 
---
--- AUTO_INCREMENT for table `emails`
---
-ALTER TABLE `emails`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
-
---
--- AUTO_INCREMENT for table `messages`
---
-ALTER TABLE `messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
-
---
--- AUTO_INCREMENT for table `names`
---
-ALTER TABLE `names`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
-COMMIT;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

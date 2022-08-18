@@ -10,10 +10,8 @@ router.post("/calculate", async (req, res) => {
   try {
     // get config
     let config = await pConnection(queries.getConfig());
-
-    // convert RawDataPacket to object
     config = await Object.values(JSON.parse(JSON.stringify(config)))[0];
-    // let config = defaultConfig;
+    // let config = defaultConfig; // no SQL db? use this instead
 
     // calculate carbon offset data
     const resultData = await offsetCalc(req.body, config);
