@@ -17,7 +17,7 @@ app.get("/", (req, res) => {
 app.use("/", router);
 
 // const port = process.env.PORT || 6001;
-const port = 6001;
+const port = 6010;
 
 app.listen(port, () => {
   console.log(`server is running on port: ${port}`);

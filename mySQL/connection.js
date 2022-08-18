@@ -21,4 +21,5 @@ function pConnection(query) {
     });
   });
 }
+
 module.exports = pConnection;
